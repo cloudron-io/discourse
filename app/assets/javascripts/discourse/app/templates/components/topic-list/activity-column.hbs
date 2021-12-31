@@ -7,7 +7,7 @@
   </div>
 {{else}}
   {{!-- TODO: Remove this branch when topic-lists are de-tablified --}}
-  <td class="{{@class}} {{cold-age-class @topic.createdAt startDate=@topic.bumpedAt class=""}} activity" title={{html-safe @topic.bumpedAtTitle}}>
+  <td class="{{@class}} {{cold-age-class @topic.createdAt startDate=@topic.bumpedAt class=""}} activity" title={{@topic.bumpedAtTitle}}>
     <a class="post-activity" href={{@topic.lastPostUrl}}>
       {{~raw-plugin-outlet name="topic-list-before-relative-date" context=(hash topic=@topic)~}}
       {{~format-date @topic.bumpedAt format="tiny" noTitle="true"~}}
