@@ -3,6 +3,43 @@ import deprecated from "discourse-common/lib/deprecated";
 import { findHelper } from "discourse-common/lib/helpers";
 import { get } from "@ember/object";
 import SuffixTrie from "discourse-common/lib/suffix-trie";
+import GlobalsResolver from "@ember/application/globals-resolver";
+import { DEBUG } from "@glimmer/env";
+
+if (DEBUG) {
+  // WARNING: MEGA-HACK AHEAD
+  //
+  // In development/test builds, the legacy GlobalsResolver raises an error
+  // when looking up Glimmer components. This hack bypasses the error.
+  // We should remove this hack after migrating to the modern `ember-resolver`.
+  //
+  // We're copy/pasting the original implementation here... not ideal.
+  // A version check will warn us to check for changes in the original
+  // implementation following ember upgrades.
+
+  if (Ember.VERSION === "3.15.0") {
+    GlobalsResolver.prototype.resolve = function (fullName) {
+      let parsedName = this.parseName(fullName);
+      let resolveMethodName = parsedName.resolveMethodName;
+      let resolved;
+
+      if (this[resolveMethodName]) {
+        resolved = this[resolveMethodName](parsedName);
+      }
+
+      resolved = resolved || this.resolveOther(parsedName);
+
+      // (Skipped all the debug logic here)
+
+      return resolved;
+    };
+  } else {
+    // eslint-disable-next-line no-console
+    console.error(
+      "Heads-up: the hack in `discourse-common/addon/resolver.js` has auto-disabled itself following an ember upgrade. Things are probably broken."
+    );
+  }
+}
 
 let _options = {};
 let moduleSuffixTrie = null;
