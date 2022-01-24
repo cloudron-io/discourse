@@ -29,7 +29,7 @@ export function showEntrance(e) {
 
 export function navigateToTopic(topic, href) {
   this.appEvents.trigger("header:update-topic", topic);
-  DiscourseURL.routeTo(href || topic.get("url"));
+  DiscourseURL.routeTo(href || topic.url);
   return false;
 }
 
@@ -103,19 +103,19 @@ export default Component.extend({
   unboundClassNames(topic, lastVisitedTopic) {
     let classes = [];
 
-    if (topic.get("category")) {
-      classes.push("category-" + topic.get("category.fullSlug"));
+    if (topic.category) {
+      classes.push("category-" + topic.category.fullSlug);
     }
 
-    if (topic.get("tags")) {
-      topic.get("tags").forEach((tagName) => classes.push("tag-" + tagName));
+    if (topic.tags) {
+      topic.tags.forEach((tagName) => classes.push("tag-" + tagName));
     }
 
-    if (topic.get("hasExcerpt")) {
+    if (topic.hasExcerpt) {
       classes.push("has-excerpt");
     }
 
-    if (topic.get("unseen")) {
+    if (topic.unseen) {
       classes.push("unseen-topic");
     }
 
@@ -124,7 +124,7 @@ export default Component.extend({
     }
 
     ["liked", "archived", "bookmarked", "pinned", "closed"].forEach((name) => {
-      if (topic.get(name)) {
+      if (topic[name]) {
         classes.push(name);
       }
     });
@@ -137,16 +137,16 @@ export default Component.extend({
   },
 
   hasLikes() {
-    return this.get("topic.like_count") > 0;
+    return this.topic.like_count > 0;
   },
 
   hasOpLikes() {
-    return this.get("topic.op_like_count") > 0;
+    return this.topic.op_like_count > 0;
   },
 
   @discourseComputed
   expandPinned() {
-    const pinned = this.get("topic.pinned");
+    const pinned = this.topic.pinned;
     if (!pinned) {
       return false;
     }
@@ -161,7 +161,7 @@ export default Component.extend({
       }
     }
 
-    if (this.expandGloballyPinned && this.get("topic.pinned_globally")) {
+    if (this.expandGloballyPinned && this.topic.pinned_globally) {
       return true;
     }
 
@@ -228,10 +228,10 @@ export default Component.extend({
 
   _highlightIfNeeded: on("didInsertElement", function () {
     // highlight the last topic viewed
-    if (this.session.get("lastTopicIdViewed") === this.get("topic.id")) {
+    if (this.session.get("lastTopicIdViewed") === this.topic.id) {
       this.session.set("lastTopicIdViewed", null);
       this.highlight({ isLastViewedTopic: true });
-    } else if (this.get("topic.highlight")) {
+    } else if (this.topic.highlight) {
       // highlight new topics that have been loaded from the server or the one we just created
       this.set("topic.highlight", false);
       this.highlight();
