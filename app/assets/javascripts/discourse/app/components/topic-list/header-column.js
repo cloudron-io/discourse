@@ -1,41 +1,55 @@
-import EmberObject from "@ember/object";
+import GlimmerComponent from "@glimmer/component";
 import I18n from "I18n";
-import discourseComputed from "discourse-common/utils/decorators";
-import { and } from "@ember/object/computed";
+import { cached } from "@glimmer/tracking";
 
-export default EmberObject.extend({
-  sortable: null,
-  ariaPressed: and("sortable", "isSorting"),
+export default class extends GlimmerComponent {
+  @cached
+  get tabindex() {
+    return this.args.sortable ? "0" : null;
+  }
 
-  @discourseComputed
-  localizedName() {
-    if (this.forceName) {
-      return this.forceName;
+  @cached
+  get role() {
+    return this.args.sortable ? "button" : null;
+  }
+
+  @cached
+  get ariaPressed() {
+    if (!this.args.sortable) {
+      return null;
+    }
+    return this.isSorting;
+  }
+
+  @cached
+  get localizedName() {
+    if (this.args.forceName) {
+      return this.args.forceName;
     }
 
-    return this.name ? I18n.t(this.name) : "";
-  },
+    return this.args.name ? I18n.t(this.args.name) : "";
+  }
 
-  @discourseComputed
-  sortIcon() {
-    const asc = this.parent.ascending ? "up" : "down";
+  @cached
+  get sortIcon() {
+    const asc = this.args.currentAscending ? "up" : "down";
     return `chevron-${asc}`;
-  },
+  }
 
-  @discourseComputed
-  isSorting() {
-    return this.sortable && this.parent.order === this.order;
-  },
+  @cached
+  get isSorting() {
+    return this.args.sortable && this.args.currentOrder === this.args.order;
+  }
 
-  @discourseComputed
-  className() {
+  @cached
+  get className() {
     const name = [];
 
-    if (this.order) {
-      name.push(this.order);
+    if (this.args.order) {
+      name.push(this.args.order);
     }
 
-    if (this.sortable) {
+    if (this.args.sortable) {
       name.push("sortable");
 
       if (this.isSorting) {
@@ -43,19 +57,22 @@ export default EmberObject.extend({
       }
     }
 
-    if (this.number) {
+    if (this.args.number) {
       name.push("num");
     }
 
     return name.join(" ");
-  },
+  }
 
-  @discourseComputed
-  ariaSort() {
+  @cached
+  get ariaSort() {
+    if (!this.args.sortable) {
+      return null;
+    }
     if (this.isSorting) {
-      return this.parent.ascending ? "ascending" : "descending";
+      return this.args.currentAscending ? "ascending" : "descending";
     } else {
       return false;
     }
-  },
-});
+  }
+}

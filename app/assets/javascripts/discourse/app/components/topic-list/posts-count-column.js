@@ -1,46 +1,55 @@
-import EmberObject from "@ember/object";
+import GlimmerComponent from "@glimmer/component";
 import I18n from "I18n";
-import discourseComputed from "discourse-common/utils/decorators";
+import { cached } from "@glimmer/tracking";
+import { getOwner } from "@ember/application";
 
-export default EmberObject.extend({
-  tagName: "td",
+export default class TopicListPostsCountColumn extends GlimmerComponent {
+  @cached
+  get siteSettings() {
+    // TODO: Some kind of global service/helper for this?
+    const applicationInstance = getOwner(this);
+    return applicationInstance.lookup("site-settings:main");
+  }
 
-  @discourseComputed("topic.like_count", "topic.posts_count")
-  ratio(likeCount, postCount) {
-    const likes = parseFloat(likeCount);
-    const posts = parseFloat(postCount);
+  @cached
+  get ratio() {
+    const likes = parseFloat(this.args.topic.likes_count);
+    const posts = parseFloat(this.args.topic.posts_count);
 
     if (posts < 10) {
       return 0;
     }
 
     return (likes || 0) / posts;
-  },
+  }
 
-  @discourseComputed("topic.replyCount", "ratioText")
-  title(count, ratio) {
-    return I18n.messageFormat("posts_likes_MF", { count, ratio }).trim();
-  },
+  @cached
+  get title() {
+    return I18n.messageFormat("posts_likes_MF", {
+      count: this.args.topic.replyCount,
+      ratio: this.ratioText,
+    }).trim();
+  }
 
-  @discourseComputed("ratio")
-  ratioText(ratio) {
+  @cached
+  get ratioText() {
     const settings = this.siteSettings;
-    if (ratio > settings.topic_post_like_heat_high) {
+    if (this.ratio > settings.topic_post_like_heat_high) {
       return "high";
     }
-    if (ratio > settings.topic_post_like_heat_medium) {
+    if (this.ratio > settings.topic_post_like_heat_medium) {
       return "med";
     }
-    if (ratio > settings.topic_post_like_heat_low) {
+    if (this.ratio > settings.topic_post_like_heat_low) {
       return "low";
     }
     return "";
-  },
+  }
 
-  @discourseComputed("ratioText")
-  likesHeat(ratioText) {
-    if (ratioText && ratioText.length) {
-      return `heatmap-${ratioText}`;
+  @cached
+  get likesHeat() {
+    if (this.ratioText) {
+      return `heatmap-${this.ratioText}`;
     }
-  },
-});
+  }
+}

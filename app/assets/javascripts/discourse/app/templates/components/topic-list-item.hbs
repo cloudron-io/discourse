@@ -1,4 +1,4 @@
-{{~raw-plugin-outlet name="topic-list-before-columns"}}
+{{~raw-plugin-outlet name="topic-list-before-columns" context=this}}
 
 {{#if bulkSelectEnabled}}
   <td class="bulk-select topic-list-data">
@@ -16,42 +16,42 @@
   at the end of the link, preventing it from line wrapping onto its own line.
 --}}
 <td class="main-link clearfix topic-list-data" colspan="1">
-  {{~raw-plugin-outlet name="topic-list-before-link"}}
+  {{~raw-plugin-outlet name="topic-list-before-link" context=this}}
   <span class="link-top-line">
-    {{~raw-plugin-outlet name="topic-list-before-status"}}
-    {{~raw "topic-status" topic=topic}}
+    {{~raw-plugin-outlet name="topic-list-before-status" context=this}}
+    {{~topic-list/topic-status topic=topic}}
     {{~topic-link topic class="raw-link raw-topic-link"}}
     {{~#if topic.featured_link}}
       {{~topic-featured-link topic}}
     {{~/if}}
-    {{~raw-plugin-outlet name="topic-list-after-title"}}
-    {{~raw "list/unread-indicator" includeUnreadIndicator=includeUnreadIndicator
+    {{~raw-plugin-outlet name="topic-list-after-title" context=this}}
+    {{topic-list/unread-indicator includeUnreadIndicator=includeUnreadIndicator
                                    topicId=topic.id
                                    unreadClass=unreadClass~}}
     {{~#if showTopicPostBadges}}
-      {{~raw "topic-post-badges" unreadPosts=topic.unread_posts unseen=topic.unseen url=topic.lastUnreadUrl newDotText=newDotText}}
+      {{topic-list/post-badges unreadPosts=topic.unread_posts unseen=topic.unseen url=topic.lastUnreadUrl newDotText=newDotText}}
     {{~/if}}
   </span>
   <div class="link-bottom-line">
     {{#unless hideCategory}}
       {{#unless topic.isPinnedUncategorized}}
-        {{~raw-plugin-outlet name="topic-list-before-category"}}
+        {{~raw-plugin-outlet name="topic-list-before-category" context=this}}
         {{category-link topic.category}}
       {{/unless}}
     {{/unless}}
     {{discourse-tags topic mode="list" tagsForUser=tagsForUser}}
-    {{raw "list/action-list" topic=topic postNumbers=topic.liked_post_numbers className="likes" icon="heart"}}
+    {{topic-list/action-list topic=topic postNumbers=topic.liked_post_numbers className="likes" icon="heart"}}
   </div>
   {{#if expandPinned}}
-    {{raw "list/topic-excerpt" topic=topic}}
+    {{topic-list/topic-excerpt topic=topic}}
   {{/if}}
 </td>
 
 {{#if showPosters}}
-  {{raw "list/posters-column" posters=topic.featuredUsers}}
+  {{topic-list/posters-column posters=topic.featuredUsers}}
 {{/if}}
 
-{{raw "list/posts-count-column" topic=topic}}
+{{topic-list/posts-count-column topic=topic}}
 
 {{#if showLikes}}
   <td class="num likes topic-list-data">
@@ -74,8 +74,8 @@
 {{/if}}
 
 <td class="num views {{topic.viewsHeat}} topic-list-data">
-  {{raw-plugin-outlet name="topic-list-before-view-count"}}
+  {{raw-plugin-outlet name="topic-list-before-view-count" context=this}}
   {{number topic.views numberKey="views_long"}}
 </td>
 
-{{raw "list/activity-column" topic=topic class="num topic-list-data" tagName="td"}}
+{{topic-list/activity-column topic=topic class="num topic-list-data" tagName="td"}}

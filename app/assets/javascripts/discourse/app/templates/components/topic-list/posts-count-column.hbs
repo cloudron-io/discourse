@@ -1,16 +1,16 @@
 {{#if (eq @tagName "div")}}
-  <div class="num posts-map posts {{view.likesHeat}} topic-list-data" title={{view.title}}>
-    <button class="btn-link posts-map badge-posts {{view.likesHeat}}" type="button">
-      {{raw-plugin-outlet name="topic-list-before-reply-count"}}
-      {{number topic.replyCount noTitle="true" ariaLabel=view.title}}
+  <div class="num posts-map posts {{likesHeat}} topic-list-data" title={{title}}>
+    <button class="btn-link posts-map badge-posts {{likesHeat}}" type="button">
+      {{raw-plugin-outlet name="topic-list-before-reply-count" context=(hash topic=@topic)}}
+      {{number @topic.replyCount noTitle="true" ariaLabel=title}}
     </button>
   </div>
 {{else}}
   {{!-- TODO: Remove this branch when topic-lists are de-tablified --}}
-  <td class="num posts-map posts {{view.likesHeat}} topic-list-data" title={{view.title}}>
-    <button class="btn-link posts-map badge-posts {{view.likesHeat}}" type="button">
-      {{raw-plugin-outlet name="topic-list-before-reply-count"}}
-      {{number topic.replyCount noTitle="true" ariaLabel=view.title}}
+  <td class="num posts-map posts {{likesHeat}} topic-list-data" title={{title}}>
+    <button class="btn-link posts-map badge-posts {{likesHeat}}" type="button">
+      {{raw-plugin-outlet name="topic-list-before-reply-count" context=(hash topic=@topic)}}
+      {{number @topic.replyCount noTitle="true" ariaLabel=title}}
     </button>
   </td>
 {{/if}}

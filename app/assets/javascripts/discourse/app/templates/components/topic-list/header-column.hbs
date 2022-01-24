@@ -1,12 +1,19 @@
-{{!-- template-lint-disable  no-nested-interactive --}}
-<th data-sort-order={{order}} class="{{view.className}} topic-list-data" scope="col" aria-label={{ariaLabel}} tabindex={{if sortable "0"}} role="button" aria-pressed={{view.ariaPressed}} aria-sort={{view.ariaSort}}>
-  {{~#if canBulkSelect}}
-    {{~#if showBulkToggle}}
+<th data-sort-order={{@order}}
+  class="{{this.className}} topic-list-data"
+  scope="col"
+  aria-label={{@ariaLabel}}
+  tabindex={{this.tabindex}}
+  role={{this.role}}
+  aria-pressed={{this.aria-pressed}}
+  aria-sort={{this.ariaSort}}
+>
+  {{~#if @canBulkSelect}}
+    {{~#if @showBulkToggle}}
       {{raw "flat-button" class="bulk-select" icon="list" title="topics.bulk.toggle"}}
     {{/if~}}
-    {{~#if bulkSelectEnabled}}
+    {{~#if @bulkSelectEnabled}}
       <span class="bulk-select-topics">
-        {{~#if canDoBulkActions}}
+        {{~#if @canDoBulkActions}}
           <button class="btn btn-icon no-text bulk-select-actions" type="button">{{d-icon "cog"}}&#8203;</button>
         {{/if~}}
         <button class="btn btn-default bulk-select-all" type="button">{{i18n "topics.bulk.select_all"}}</button>
@@ -14,8 +21,8 @@
       </span>
     {{/if~}}
   {{/if~}}
-  {{view.localizedName}}
-  {{~#if view.isSorting}}
-    {{d-icon view.sortIcon}}
+  {{this.localizedName}}
+  {{~#if isSorting}}
+    {{d-icon sortIcon}}
   {{/if~}}
 </th>

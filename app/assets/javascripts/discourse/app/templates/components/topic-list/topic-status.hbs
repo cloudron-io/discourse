@@ -1,14 +1,11 @@
-{{~#if view.renderDiv ~}}
-  <div class='topic-statuses'>
-{{/if ~}}
-  {{~#each view.statuses as |status|~}}
-    {{~#if status.href ~}}
-      <a href='{{status.href}}' title='{{status.title}}' class='topic-status {{status.extraClasses}}'>{{d-icon status.icon}}</a>
-    {{~else ~}}
-      <{{status.openTag}} title='{{status.title}}' class='topic-status'>{{d-icon status.icon class=status.key}}</{{status.closeTag}}>
-    {{~/if ~}}
-  {{~/each}}
-  {{~#if view.showDefault~}}{{d-icon view.showDefault}}{{~/if ~}}
-{{~#if view.renderDiv ~}}
+{{~#if shouldRender ~}}
+  <div class="topic-statuses">
+    {{~#each statuses as |status|~}}
+      {{~#if status.aTag ~}}
+        <a href={{status.href}} title={{status.title}} class="topic-status {{status.extraClasses}}">{{d-icon status.icon class=status.key}}</a>
+      {{~else~}}
+        <span title={{status.title}} class="topic-status {{status.extraClasses}}">{{d-icon status.icon class=status.key}}</span>
+      {{~/if~}}
+    {{~/each}}
   </div>
-{{/if ~}}
+{{/if~}}

@@ -1,6 +1,6 @@
 {{#unless skipHeader}}
   <thead class="topic-list-header">
-    {{raw "topic-list-header"
+    {{topic-list/header
       canBulkSelect=canBulkSelect
       toggleInTitle=toggleInTitle
       hideCategory=hideCategory
@@ -42,7 +42,9 @@
                       lastVisitedTopic=lastVisitedTopic
                       selected=selected
                       tagsForUser=tagsForUser}}
-    {{raw "list/visited-line" lastVisitedTopic=lastVisitedTopic topic=topic}}
+    {{#if (eq lastVisitedTopic topic)}}
+      {{topic-list/visited-line}}
+    {{/if}}
   {{/each}}
 </tbody>
 

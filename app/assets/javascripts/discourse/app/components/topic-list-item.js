@@ -1,10 +1,8 @@
-import discourseComputed, { observes } from "discourse-common/utils/decorators";
+import discourseComputed from "discourse-common/utils/decorators";
 import Component from "@ember/component";
 import DiscourseURL from "discourse/lib/url";
 import I18n from "I18n";
-import { RUNTIME_OPTIONS } from "discourse-common/lib/raw-handlebars-helpers";
 import { alias } from "@ember/object/computed";
-import { findRawTemplate } from "discourse-common/lib/raw-templates";
 import { on } from "@ember/object/evented";
 import { schedule } from "@ember/runloop";
 import { topicTitleDecorators } from "discourse/components/topic-title";
@@ -40,27 +38,6 @@ export default Component.extend({
   classNameBindings: [":topic-list-item", "unboundClassNames", "topic.visited"],
   attributeBindings: ["data-topic-id", "role", "ariaLevel:aria-level"],
   "data-topic-id": alias("topic.id"),
-
-  didReceiveAttrs() {
-    this._super(...arguments);
-    this.renderTopicListItem();
-  },
-
-  @observes("topic.pinned")
-  renderTopicListItem() {
-    const template = findRawTemplate("list/topic-list-item");
-    if (template) {
-      this.set(
-        "topicListItemContents",
-        template(this, RUNTIME_OPTIONS).htmlSafe()
-      );
-      schedule("afterRender", () => {
-        if (this.selected && this.selected.includes(this.topic)) {
-          this.element.querySelector("input.bulk-select").checked = true;
-        }
-      });
-    }
-  },
 
   didInsertElement() {
     this._super(...arguments);

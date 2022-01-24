@@ -1,15 +1,25 @@
-import { and } from "@ember/object/computed";
-import EmberObject from "@ember/object";
+import GlimmerComponent from "@glimmer/component";
+import { getOwner } from "@ember/application";
 import I18n from "I18n";
-import discourseComputed from "discourse-common/utils/decorators";
+import { cached } from "@glimmer/tracking";
 
-export default EmberObject.extend({
-  showBadges: and("postBadgesEnabled", "topic.unread_posts"),
+export default class PostCountOrBadges extends GlimmerComponent {
+  @cached
+  get currentUser() {
+    // TODO: Some kind of global injection/helper for this?
+    const applicationInstance = getOwner(this);
+    return applicationInstance.lookup("current-user:main");
+  }
 
-  @discourseComputed
-  newDotText() {
+  @cached
+  get showBadges() {
+    return this.args.postBadgesEnabled && this.args.topic.unread_posts;
+  }
+
+  @cached
+  get newDotText() {
     return this.currentUser && this.currentUser.trust_level > 0
       ? ""
       : I18n.t("filters.new.lower_title");
-  },
-});
+  }
+}

@@ -1,28 +1,25 @@
-import EmberObject from "@ember/object";
+import GlimmerComponent from "@glimmer/component";
+import { cached } from "@glimmer/tracking";
 import I18n from "I18n";
-import discourseComputed from "discourse-common/utils/decorators";
 
-export default EmberObject.extend({
-  showDefault: null,
+export default class TopicListStatus extends GlimmerComponent {
+  get shouldRender() {
+    return this.statuses.length > 0;
+  }
 
-  @discourseComputed("defaultIcon")
-  renderDiv(defaultIcon) {
-    return (defaultIcon || this.statuses.length > 0) && !this.noDiv;
-  },
-
-  @discourseComputed
-  statuses() {
-    const topic = this.topic;
+  @cached
+  get statuses() {
+    const topic = this.args.topic;
     const results = [];
 
     // TODO, custom statuses? via override?
-    if (topic.get("is_warning")) {
+    if (topic.is_warning) {
       results.push({ icon: "envelope", key: "warning" });
     }
 
-    if (topic.get("bookmarked")) {
-      const postNumbers = topic.get("bookmarked_post_numbers");
-      let url = topic.get("url");
+    if (topic.bookmarked) {
+      const postNumbers = topic.bookmarked_post_numbers;
+      let url = topic.url;
       let extraClasses = "";
       if (postNumbers && postNumbers[0] > 1) {
         url += "/" + postNumbers[0];
@@ -38,23 +35,23 @@ export default EmberObject.extend({
       });
     }
 
-    if (topic.get("closed") && topic.get("archived")) {
+    if (topic.closed && topic.archived) {
       results.push({ icon: "lock", key: "locked_and_archived" });
-    } else if (topic.get("closed")) {
+    } else if (topic.closed) {
       results.push({ icon: "lock", key: "locked" });
-    } else if (topic.get("archived")) {
+    } else if (topic.archived) {
       results.push({ icon: "lock", key: "archived" });
     }
 
-    if (topic.get("pinned")) {
+    if (topic.pinned) {
       results.push({ icon: "thumbtack", key: "pinned" });
     }
 
-    if (topic.get("unpinned")) {
+    if (topic.unpinned) {
       results.push({ icon: "thumbtack", key: "unpinned" });
     }
 
-    if (topic.get("invisible")) {
+    if (topic.invisible) {
       results.push({ icon: "far-eye-slash", key: "unlisted" });
     }
 
@@ -68,22 +65,11 @@ export default EmberObject.extend({
 
     results.forEach((result) => {
       result.title = I18n.t(`topic_statuses.${result.key}.help`);
-      if (
-        this.currentUser &&
-        (result.key === "pinned" || result.key === "unpinned")
-      ) {
-        result.openTag = "a href";
-        result.closeTag = "a";
-      } else {
-        result.openTag = "span";
-        result.closeTag = "span";
+      if (result.href || ["pinned", "unpinned"].includes(result.key)) {
+        result.aTag = true;
       }
     });
 
-    let defaultIcon = this.defaultIcon;
-    if (results.length === 0 && defaultIcon) {
-      this.set("showDefault", defaultIcon);
-    }
     return results;
-  },
-});
+  }
+}
