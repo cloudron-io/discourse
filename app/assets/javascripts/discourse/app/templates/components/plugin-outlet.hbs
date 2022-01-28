@@ -1,3 +1,33 @@
-{{#each connectors as |c|}}
-  {{plugin-connector connector=c args=args deprecatedArgs=deprecatedArgs class=c.classNames tagName=connectorTagName}}
-{{/each}}
+{{!-- template-lint-disable no-args-paths --}}
+
+{{!--
+  There is currently no way to handle dynamic tag names in Glimmer.
+  RFC: https://emberjs.github.io/rfcs/0389-dynamic-tag-names.html
+
+  A polyfill for RFC0389 is available at https://github.com/tildeio/ember-element-helper, but it uses
+  classic components under the covers, and therefore carries a performance penalty.
+
+  Instead, we can cover the most common cases with an `if` statement, and only fallback
+  to a classic component wrapper when needed
+--}}
+
+{{#if (not @tagName)}}
+  {{!-- The modern path - no wrapper element --}}
+  {{#each this.connectors as |c|}}
+    {{plugin-connector connector=c args=this.args.args deprecatedArgs=@deprecatedArgs class=c.classNames tagName=@connectorTagName}}
+  {{/each}}
+{{else if (eq @tagName "span")}}
+  {{!-- the old default --}}
+  <span>
+    {{#each this.connectors as |c|}}
+      {{plugin-connector connector=c args=this.args.args deprecatedArgs=@deprecatedArgs class=c.classNames tagName=@connectorTagName}}
+    {{/each}}
+  </span>
+{{else}}
+  {{!-- any other legacy outlets with a tagName. This requires a Classic Component, so it's slower --}}
+  {{#wrapper-component tagName=@tagName}}
+    {{#each this.connectors as |c|}}
+      {{plugin-connector connector=c args=this.args.args deprecatedArgs=@deprecatedArgs class=c.classNames tagName=@connectorTagName}}
+    {{/each}}
+  {{/wrapper-component}}
+{{/if}}

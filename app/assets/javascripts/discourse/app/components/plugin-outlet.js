@@ -2,6 +2,9 @@ import {
   buildArgsWithDeprecations,
   renderedConnectorsFor,
 } from "discourse/lib/plugin-connectors";
+import GlimmerComponent from "@glimmer/component";
+import { helperContext } from "discourse-common/lib/helpers";
+
 /**
    A plugin outlet is an extension point for templates where other templates can
    be inserted by plugins.
@@ -33,22 +36,13 @@ import {
    The list of disabled plugins is returned via the `Site` singleton.
 
 **/
-import Component from "@ember/component";
 
-export default Component.extend({
-  tagName: "",
-  connectorTagName: "",
-  connectors: null,
-
-  init() {
-    this._super(...arguments);
-    const name = this.name;
-    if (name) {
-      const args = buildArgsWithDeprecations(
-        this.args || {},
-        this.deprecatedArgs || {}
-      );
-      this.set("connectors", renderedConnectorsFor(name, args, this));
-    }
-  },
-});
+export default class extends GlimmerComponent {
+  get connectors() {
+    const args = buildArgsWithDeprecations(
+      this.args.args || {},
+      this.args.deprecatedArgs || {}
+    );
+    return renderedConnectorsFor(this.args.name, args, helperContext());
+  }
+}
